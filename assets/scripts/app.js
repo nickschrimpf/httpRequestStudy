@@ -4,20 +4,45 @@ const form = document.querySelector('#new-post form');
 const fetchPostsButton = document.querySelector('#available-posts button');
 const postList = document.querySelector('ul');
 
+// XMLHttpRequest
+// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+// STARTED WITH XMLHTTPSREQUEST BUT WILL MOVE TO THE FETCH API TO GET A STREAM
+
+// FETCH
+// https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+
 // SENDING ALL HTTP REQUESTS AND RETURN A PROMISE
 function sendRequest(method,url,data){
-    const promise = new Promise((resolve, reject) => {
-        const myxhr = new XMLHttpRequest();
-        myxhr.open(method,url);
-        myxhr.responseType = 'json';
-        myxhr.onload = function(){
-            resolve(myxhr.response);
-        };
-        myxhr.send(JSON.stringify(data));
+
+    // const promise = new Promise((resolve, reject) => {
+    //     const myxhr = new XMLHttpRequest();
+    //     myxhr.open(method,url);
+    //     myxhr.responseType = 'json';
+    //     myxhr.onload = function(){
+    //         if(myxhr.status >= 200 && myxhr.status < 300){
+    //             resolve(myxhr.response);
+    //         }else{
+    //             reject(new Error('There is an issue!'));
+    //         };
+    //     };
+    //     myxhr.onerror = () => {
+    //         console.log(myxhr.response)
+    //         console.log(myxhr.status)
+    //     };
+    //     myxhr.send(JSON.stringify(data));
+    // });
+    // return promise;
+
+    return fetch(url, {
+        method:method,
+        body:JSON.stringify(data)
+    }).then(response => {
+        return response.json();
     });
-    return promise;
 };
-// GRABBING ALL AVAILABLE POSTS RETURNS 100 TOTAL
+
+// ON BUTTON CLICK WE REACH OUT TO THE API FOR POSTS
+// COMING FROM THE CLICK HANDLER
 function showPosts(){
     sendRequest(
         'GET',
