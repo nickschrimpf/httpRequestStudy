@@ -2,6 +2,7 @@ const listEl = document.querySelector('.posts');
 const postTemplate = document.getElementById('single-post');
 const form = document.querySelector('#new-post form');
 const fetchPostsButton = document.querySelector('#available-posts button');
+const postList = document.querySelector('ul');
 
 // SENDING ALL HTTP REQUESTS AND RETURN A PROMISE
 function sendRequest(method,url,data){
@@ -24,14 +25,10 @@ function showPosts(){
         ).then(listOfPosts => {
         for(const post of listOfPosts){
             const postEl = document.importNode(postTemplate.content,true);
-
             postEl.querySelector('h2').textContent = post.title.toUpperCase();
             postEl.querySelector('p').textContent = post.body;
             postEl.querySelector('li').id = post.id;
-
             listEl.appendChild(postEl);
-            
-            
         };
     });
 };
@@ -46,10 +43,17 @@ function addPost(title,content){
     };
     sendRequest('POST','https://jsonplaceholder.typicode.com/posts', post);
 };
-
+//  GIVEN THE POST ID WE MAKE A CALL TO 
+// THE API AND DELETE THE POST AND REMOVE IT FROM THE DOM
 function deletePostById(id){
-    sendRequest('DELETE','https://jsonplaceholder.typicode.com/posts/'+id)
-}
+    sendRequest('DELETE','https://jsonplaceholder.typicode.com/posts/'+id);
+    let currentPosts = document.querySelectorAll('li');
+    currentPosts.forEach((post) => {
+        if(post.id === id){
+            postList.removeChild(post);
+        };
+    });
+};
 
 // SHOWING POST ON CLICK OF THE FETCH POSTS BUTTON
 function fetchPostsButtonClickHandler(){
@@ -64,11 +68,6 @@ function fetchPostsButtonClickHandler(){
     }
    
 }
-
-// DELETE BUTTON FOR EACH POST!
-function deleteButtonClickHandler(){
-    console.log(this.userId)
-}
 // SET UP EVENT LISTENER AND WAIT FOR CLICK TO GET POSTS
 fetchPostsButton.addEventListener('click',fetchPostsButtonClickHandler);
 
@@ -78,4 +77,11 @@ form.addEventListener('submit', event => {
     const enteredTitle = event.currentTarget.querySelector('#title').value;
     const enteredContent = event.currentTarget.querySelector('#content').value;
     addPost(enteredTitle,enteredContent);
+});
+// USE AN EVENTLISTENER ON THE LIST AND LOOK FOR CLICKS ON A BUTTON TAG
+postList.addEventListener('click', event => {
+    if(event.target.tagName === 'BUTTON'){
+       const postId = event.target.closest('li').id;
+       deletePostById(postId);
+    };
 });
