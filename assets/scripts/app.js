@@ -35,7 +35,10 @@ function sendRequest(method,url,data){
 
     return fetch(url, {
         method:method,
-        body:JSON.stringify(data)
+        body:JSON.stringify(data),
+        header: {
+            'Content-Type':'application/json'
+        }
     }).then(response => {
         return response.json();
     });
